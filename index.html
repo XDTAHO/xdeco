@@ -29,7 +29,11 @@
   <!-- 主要上傳表單區塊 -->
   <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden fade-in">
     <!-- Header -->
-    <div class="bg-blue-600 p-6 text-white text-center">
+    <div class="bg-blue-600 p-6 text-white text-center flex flex-col items-center">
+      <!-- [新增] LOGO 區塊 -->
+      <div class="bg-white p-2 rounded-lg mb-3 shadow-sm inline-block">
+        <img src="https://xindianplant.epd.ntpc.gov.tw/images/index-logo.png" alt="Logo" class="h-10 object-contain">
+      </div>
       <h1 class="text-2xl font-bold">照片上傳系統</h1>
       <p class="text-blue-100 text-sm mt-1 text-opacity-80">安全、快速地將照片同步至雲端</p>
     </div>
@@ -113,6 +117,11 @@
     <div id="uploadedGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-3">
     </div>
   </div>
+
+  <!-- [新增] 頁尾更新時間 (迭代確認用) -->
+  <footer class="mt-8 text-center text-gray-400 text-xs w-full max-w-md font-medium tracking-wide">
+    2026.07.02 15:35 更新
+  </footer>
 
   <!-- [新增] 圖片放大預覽浮動視窗 (Modal) -->
   <div id="imageModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-black/80 backdrop-blur-sm p-4 transition-opacity">
