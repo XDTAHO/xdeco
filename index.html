@@ -146,7 +146,7 @@
   <footer class="mt-8 w-full max-w-md flex flex-col items-center pb-4">
     <!-- 更新時間 -->
     <div class="text-center text-gray-400 text-xs font-medium tracking-wide mb-3">
-      2026.07.02 16:50 更新
+      2026.07.02 17:30 更新
     </div>
     
     <!-- 授權宣告區塊 -->
@@ -281,17 +281,25 @@
       const dd = String(now.getDate()).padStart(2, '0');
       elements.customDate.max = `${yyyy}-${mm}-${dd}`;
 
-      // 檢查瀏覽器是否已儲存有效密碼 (24小時內)
+      // [極速優化] 檢查瀏覽器是否已儲存有效密碼 (24小時內)
       const savedPwd = localStorage.getItem('volunteer_sys_pwd');
       const savedTime = localStorage.getItem('volunteer_sys_pwd_time');
       const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
       if (savedPwd && savedTime && (Date.now() - parseInt(savedTime) < ONE_DAY_MS)) {
+        // 1. 信任本地密碼 (樂觀載入)
+        sessionPassword = savedPwd;
         elements.sysPassword.value = savedPwd;
-        verifyPassword(); // 自動觸發驗證
+        
+        // 2. 瞬間切換畫面，不等待 GAS 驗證回應 (0 延遲)
+        elements.passwordSection.classList.add('hidden');
+        elements.mainContentSection.classList.remove('hidden');
+        
+        // 3. 在背景抓取梯次 (後端會在 getBatches 時一併驗證密碼)
+        fetchBatches(); 
       }
 
-      // 綁定密碼驗證事件
+      // 綁定密碼驗證事件 (手動輸入時才觸發)
       elements.verifyPwdBtn.addEventListener('click', verifyPassword);
       elements.sysPassword.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') verifyPassword();
@@ -441,7 +449,20 @@
             elements.batchButtons.appendChild(btn);
           });
         } else {
-          throw new Error('回傳格式錯誤');
+          // [極速優化防護] 若後端告知「授權失敗/密碼錯誤」，代表系統密碼已更改，將使用者踢回登入畫面
+          if (result.message && (result.message.includes('授權') || result.message.includes('密碼'))) {
+             localStorage.removeItem('volunteer_sys_pwd');
+             localStorage.removeItem('volunteer_sys_pwd_time');
+             sessionPassword = '';
+             
+             elements.mainContentSection.classList.add('hidden');
+             elements.passwordSection.classList.remove('hidden');
+             
+             elements.pwdErrorMsg.textContent = '登入已過期或密碼已變更，請重新輸入。';
+             elements.pwdErrorMsg.classList.remove('hidden');
+             return;
+          }
+          throw new Error(result.message || '回傳格式錯誤');
         }
       } catch (error) {
         console.error("Fetch batches error:", error);
