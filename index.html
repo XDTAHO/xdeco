@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>新店垃圾焚化環教志工系統工具</title>
+  <title>新店垃圾焚化廠環教志工系統工具</title>
   <!-- 引入 Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- 自訂過場動畫與 Spinner -->
@@ -146,7 +146,7 @@
   <footer class="mt-8 w-full max-w-md flex flex-col items-center pb-4">
     <!-- 更新時間 -->
     <div class="text-center text-gray-400 text-xs font-medium tracking-wide mb-3">
-      2026.07.02 16:40 更新
+      2026.07.02 16:50 更新
     </div>
     
     <!-- 授權宣告區塊 -->
@@ -274,6 +274,13 @@
     // ==========================================
     document.addEventListener('DOMContentLoaded', () => {
       
+      // 設定「其他日期」的最高可選日期為今天 (避免選到未來日期)
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      elements.customDate.max = `${yyyy}-${mm}-${dd}`;
+
       // 檢查瀏覽器是否已儲存有效密碼 (24小時內)
       const savedPwd = localStorage.getItem('volunteer_sys_pwd');
       const savedTime = localStorage.getItem('volunteer_sys_pwd_time');
