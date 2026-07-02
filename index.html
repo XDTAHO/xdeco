@@ -115,7 +115,7 @@
                   <input id="fileInput" name="file" type="file" accept="image/*" multiple class="sr-only" required>
                 </span>
               </div>
-              <p class="text-xs text-gray-500" id="fileChosenText">支援 JPG, PNG 等圖片格式 (可多選)</p>
+              <p class="text-xs text-gray-500" id="fileChosenText">支援 JPG, PNG 等圖片格式 (單張限 30MB 內)</p>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@
   <footer class="mt-8 w-full max-w-md flex flex-col items-center pb-4">
     <!-- 更新時間 -->
     <div class="text-center text-gray-400 text-xs font-medium tracking-wide mb-3">
-      2026.07.02 16:15 更新
+      2026.07.02 16:40 更新
     </div>
     
     <!-- 授權宣告區塊 -->
@@ -178,13 +178,29 @@
       </div>
       <div class="p-6 space-y-4 text-sm text-gray-700 overflow-y-auto max-h-[70vh]">
         <p class="font-medium text-gray-800 text-base">歡迎使用活動照片上傳系統！</p>
-        <p>為確保您的照片能正確歸檔，請參考以下上傳步驟：</p>
+        <p>為確保您的照片能正確歸檔，請參考以下步驟與注意事項：</p>
+        
         <ol class="list-decimal pl-5 space-y-2 text-gray-600">
           <li><strong>選擇歸檔位置：</strong>請依據您的活動選擇「指定梯次」，或選擇「今日/其他日期」來建立資料夾。</li>
           <li><strong>選取照片：</strong>點擊虛線框內的「選擇照片」按鈕，您可以一次圈選多張需要上傳的影像檔案。</li>
           <li><strong>開始上傳：</strong>確認選取數量無誤後，點擊最下方的「開始上傳」，請耐心等待進度條完成。</li>
           <li><strong>確認縮圖：</strong>上傳成功後，系統會在下方顯示已上傳照片的縮圖，您可以點擊縮圖放大檢視。</li>
         </ol>
+
+        <!-- 新增的注意事項與限制區塊 -->
+        <div class="bg-gray-100 p-4 rounded-lg border border-gray-200 mt-2 space-y-2">
+          <p class="font-bold text-gray-800 flex items-center gap-1 mb-2">
+            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            上傳限制與注意事項
+          </p>
+          <ul class="list-disc pl-5 space-y-1.5 text-xs text-gray-600">
+            <li><strong>支援格式：</strong>支援 JPG、PNG、GIF 等常見圖片格式。</li>
+            <li><strong>檔案大小：</strong>為確保網路傳輸穩定，單張照片請勿超過 30MB。</li>
+            <li><strong>連續上傳：</strong>上傳完成後，若要繼續上傳其他照片，只需再次點擊「選擇照片」重複動作即可。</li>
+            <li><strong>預覽限制：</strong>下方的縮圖預覽僅限「當次上傳」呈現，重新載入網頁後將不會保留預覽畫面。</li>
+          </ul>
+        </div>
+
         <div class="mt-6 bg-red-50 p-4 rounded-lg border border-red-100 text-red-800">
           <p class="font-bold mb-1 flex items-center gap-1">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
@@ -258,6 +274,16 @@
     // ==========================================
     document.addEventListener('DOMContentLoaded', () => {
       
+      // 檢查瀏覽器是否已儲存有效密碼 (24小時內)
+      const savedPwd = localStorage.getItem('volunteer_sys_pwd');
+      const savedTime = localStorage.getItem('volunteer_sys_pwd_time');
+      const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+      if (savedPwd && savedTime && (Date.now() - parseInt(savedTime) < ONE_DAY_MS)) {
+        elements.sysPassword.value = savedPwd;
+        verifyPassword(); // 自動觸發驗證
+      }
+
       // 綁定密碼驗證事件
       elements.verifyPwdBtn.addEventListener('click', verifyPassword);
       elements.sysPassword.addEventListener('keypress', (e) => {
@@ -279,14 +305,28 @@
         const files = e.target.files;
         if (files.length > 0) {
           let totalSize = 0;
+          let hasOversizedFile = false; // 新增容量檢查
+          
           for (let i = 0; i < files.length; i++) {
             totalSize += files[i].size;
+            if (files[i].size > 30 * 1024 * 1024) {
+              hasOversizedFile = true;
+            }
           }
-          elements.fileChosenText.textContent = `已選擇: ${files.length} 張照片 (共 ${(totalSize / (1024 * 1024)).toFixed(2)} MB)`;
-          elements.fileChosenText.classList.add('text-blue-600', 'font-medium');
+
+          if (hasOversizedFile) {
+            elements.fileChosenText.textContent = '選取的照片中有超過 30MB 的檔案，請重新選擇。';
+            elements.fileChosenText.classList.remove('text-blue-600');
+            elements.fileChosenText.classList.add('text-red-500', 'font-medium');
+            elements.fileInput.value = ''; // 清空選擇
+          } else {
+            elements.fileChosenText.textContent = `已選擇: ${files.length} 張照片 (共 ${(totalSize / (1024 * 1024)).toFixed(2)} MB)`;
+            elements.fileChosenText.classList.remove('text-red-500');
+            elements.fileChosenText.classList.add('text-blue-600', 'font-medium');
+          }
         } else {
-          elements.fileChosenText.textContent = '支援 JPG, PNG 等圖片格式 (可多選)';
-          elements.fileChosenText.classList.remove('text-blue-600', 'font-medium');
+          elements.fileChosenText.textContent = '支援 JPG, PNG 等圖片格式 (單張限 30MB 內)';
+          elements.fileChosenText.classList.remove('text-blue-600', 'text-red-500', 'font-medium');
         }
       });
 
@@ -333,18 +373,21 @@
         const result = await response.json();
 
         if (result.status === 'success') {
-          // [資安升級] 驗證成功，將密碼存入記憶體變數，供後續 API 使用
           sessionPassword = pwd;
           
-          // 驗證成功，隱藏密碼區塊，顯示主表單，並開始載入梯次
+          localStorage.setItem('volunteer_sys_pwd', pwd);
+          localStorage.setItem('volunteer_sys_pwd_time', Date.now().toString());
+
           elements.passwordSection.classList.add('hidden');
           elements.mainContentSection.classList.remove('hidden');
           fetchBatches(); 
         } else {
-          // 密碼錯誤
+          localStorage.removeItem('volunteer_sys_pwd');
+          localStorage.removeItem('volunteer_sys_pwd_time');
+
           elements.pwdErrorMsg.textContent = result.message || '密碼錯誤，請重新輸入。';
           elements.pwdErrorMsg.classList.remove('hidden');
-          elements.sysPassword.value = ''; // 清空輸入框
+          elements.sysPassword.value = ''; 
           elements.sysPassword.focus();
         }
       } catch (error) {
@@ -352,7 +395,6 @@
         elements.pwdErrorMsg.textContent = '系統連線異常，請稍後再試。';
         elements.pwdErrorMsg.classList.remove('hidden');
       } finally {
-        // 解除 loading 狀態
         elements.verifyPwdBtn.disabled = false;
         elements.pwdBtnText.textContent = '登入系統';
         elements.pwdSpinner.classList.add('hidden');
@@ -362,7 +404,6 @@
     // 2. 抓取梯次列表
     async function fetchBatches() {
       try {
-        // [資安升級] 抓取梯次時，也必須附上密碼給後端檢查
         const response = await fetch(`${GAS_URL}?action=getBatches&pwd=${encodeURIComponent(sessionPassword)}`);
         const result = await response.json();
 
@@ -434,6 +475,12 @@
       try {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
+          
+          // 雙重保險防護：如果發現超過 30MB 的檔案就跳過
+          if (file.size > 30 * 1024 * 1024) {
+             throw new Error(`檔案 ${file.name} 超過 30MB 限制`);
+          }
+
           setLoadingState(true, `上傳中... (${i + 1}/${files.length})`);
           
           const base64Data = await fileToBase64(file);
@@ -446,7 +493,7 @@
             batchFolderId: uploadType === 'batch' ? selectedBatch.folderId : null,
             batchName: uploadType === 'batch' ? selectedBatch.name : null,
             customDate: uploadType === 'other_date' ? elements.customDate.value : null,
-            pwd: sessionPassword // [資安升級] 每次上傳檔案都必須夾帶密碼
+            pwd: sessionPassword 
           };
 
           const response = await fetch(GAS_URL, {
@@ -465,7 +512,7 @@
           }
         }
 
-        showStatus('success', `成功上傳 ${successCount} 張照片！`);
+        showStatus('success', `成功上傳 ${successCount} 張照片！若需上傳更多，請再次點擊上方「選擇照片」即可。`);
         elements.form.reset(); 
         selectedBatch = { folderId: null, name: null }; 
         if (elements.batchButtons) {
@@ -474,7 +521,7 @@
             b.classList.add('border-gray-300', 'bg-white', 'text-gray-700');
           });
         }
-        elements.fileChosenText.textContent = '支援 JPG, PNG 等圖片格式 (可多選)';
+        elements.fileChosenText.textContent = '支援 JPG, PNG 等圖片格式 (單張限 30MB 內)';
         elements.fileChosenText.classList.remove('text-blue-600', 'font-medium');
 
       } catch (error) {
