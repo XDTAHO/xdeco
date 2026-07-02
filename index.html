@@ -251,6 +251,7 @@
     };
 
     let selectedBatch = { folderId: null, name: null };
+    let sessionPassword = ''; // [資安升級] 用來在記憶體中暫存已驗證的密碼
 
     // ==========================================
     // 初始化與事件綁定
@@ -332,6 +333,9 @@
         const result = await response.json();
 
         if (result.status === 'success') {
+          // [資安升級] 驗證成功，將密碼存入記憶體變數，供後續 API 使用
+          sessionPassword = pwd;
+          
           // 驗證成功，隱藏密碼區塊，顯示主表單，並開始載入梯次
           elements.passwordSection.classList.add('hidden');
           elements.mainContentSection.classList.remove('hidden');
@@ -358,7 +362,8 @@
     // 2. 抓取梯次列表
     async function fetchBatches() {
       try {
-        const response = await fetch(`${GAS_URL}?action=getBatches`);
+        // [資安升級] 抓取梯次時，也必須附上密碼給後端檢查
+        const response = await fetch(`${GAS_URL}?action=getBatches&pwd=${encodeURIComponent(sessionPassword)}`);
         const result = await response.json();
 
         if (result.status === 'success' && result.data) {
@@ -440,7 +445,8 @@
             uploadType: uploadType === 'today' ? 'date' : uploadType,
             batchFolderId: uploadType === 'batch' ? selectedBatch.folderId : null,
             batchName: uploadType === 'batch' ? selectedBatch.name : null,
-            customDate: uploadType === 'other_date' ? elements.customDate.value : null
+            customDate: uploadType === 'other_date' ? elements.customDate.value : null,
+            pwd: sessionPassword // [資安升級] 每次上傳檔案都必須夾帶密碼
           };
 
           const response = await fetch(GAS_URL, {
