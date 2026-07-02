@@ -114,6 +114,14 @@
     </div>
   </div>
 
+  <!-- [新增] 圖片放大預覽浮動視窗 (Modal) -->
+  <div id="imageModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-black/80 backdrop-blur-sm p-4 transition-opacity">
+    <button id="closeModalBtn" class="absolute top-6 right-6 text-white hover:text-gray-300 focus:outline-none transition-transform hover:scale-110">
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+    <img id="modalImage" src="" alt="放大預覽" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl">
+  </div>
+
   <script>
     // ==========================================
     // 系統設定
@@ -139,7 +147,12 @@
       
       // 新增縮圖區塊元素
       uploadedGallery: document.getElementById('uploadedGallery'),
-      uploadedGrid: document.getElementById('uploadedGrid')
+      uploadedGrid: document.getElementById('uploadedGrid'),
+
+      // [新增] Modal 元素
+      imageModal: document.getElementById('imageModal'),
+      modalImage: document.getElementById('modalImage'),
+      closeModalBtn: document.getElementById('closeModalBtn')
     };
 
     let selectedBatch = { folderId: null, name: null };
@@ -177,6 +190,15 @@
       });
 
       elements.form.addEventListener('submit', handleUpload);
+
+      // [新增] 綁定 Modal 關閉事件
+      elements.closeModalBtn.addEventListener('click', closeModal);
+      elements.imageModal.addEventListener('click', (e) => {
+        // 若點擊到黑色背景區塊，也自動關閉視窗 (避免點到圖片本身關閉)
+        if (e.target === elements.imageModal) {
+          closeModal();
+        }
+      });
     });
 
     // ==========================================
@@ -350,15 +372,27 @@
       }
     }
 
-    // [新增] 渲染本地縮圖的功能
+    // [新增] 關閉 Modal 的輔助函式
+    function closeModal() {
+      elements.imageModal.classList.add('hidden');
+    }
+
+    // [修改] 渲染本地縮圖的功能 (加入點擊放大)
     function renderThumbnail(file) {
       // 使用瀏覽器原生的 createObjectURL 建立暫時的本地圖片連結 (0 網路延遲)
       const imageUrl = URL.createObjectURL(file);
       
       // 建立縮圖 DOM 結構
       const imgWrapper = document.createElement('div');
-      imgWrapper.className = 'relative aspect-square w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm fade-in group';
+      // 加入 cursor-pointer 提示可點擊
+      imgWrapper.className = 'relative aspect-square w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm fade-in group cursor-pointer';
       
+      // [新增] 點擊放大事件：替換圖片來源並顯示浮動視窗
+      imgWrapper.addEventListener('click', () => {
+        elements.modalImage.src = imageUrl;
+        elements.imageModal.classList.remove('hidden');
+      });
+
       const img = document.createElement('img');
       img.src = imageUrl;
       img.className = 'object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-110';
