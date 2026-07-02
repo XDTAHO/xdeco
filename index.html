@@ -30,12 +30,12 @@
   <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden fade-in">
     <!-- Header -->
     <div class="bg-blue-600 p-6 text-white text-center flex flex-col items-center">
-      <!-- [新增] LOGO 區塊 -->
+      <!-- LOGO 區塊 -->
       <div class="bg-white p-2 rounded-lg mb-3 shadow-sm inline-block">
-        <img src="https://xindianplant.epd.ntpc.gov.tw/images/index-logo.png" alt="Logo" class="h-10 object-contain">
+        <img src="https://duk.tw/zbac8H.png" alt="Logo" class="h-10 object-contain">
       </div>
-      <h1 class="text-2xl font-bold">照片上傳系統</h1>
-      <p class="text-blue-100 text-sm mt-1 text-opacity-80">安全、快速地將照片同步至雲端</p>
+      <h1 class="text-2xl font-bold">活動照片上傳系統(測試中)</h1>
+      <p class="text-blue-100 text-sm mt-2 text-opacity-90 leading-relaxed">安全、快速地將照片同步至雲端。<br>上傳照片視同拍攝人授權新店垃圾焚化廠具有使用該照片之所有權利。</p>
     </div>
 
     <!-- Form -->
@@ -75,6 +75,14 @@
         <input type="date" id="customDate" class="mt-1 block w-full px-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md border shadow-sm transition-colors">
       </div>
 
+      <!-- 使用說明按鈕 -->
+      <div class="flex justify-end -mt-2 mb-2">
+        <button type="button" id="openHelpBtn" class="text-sm font-medium text-blue-600 hover:text-blue-800 focus:outline-none flex items-center gap-1 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span class="underline underline-offset-2">使用說明</span>
+        </button>
+      </div>
+
       <!-- 檔案選擇區 -->
       <div class="space-y-2">
         <label class="block text-sm font-medium text-gray-700">選擇照片</label>
@@ -107,7 +115,7 @@
     </form>
   </div>
 
-  <!-- [新增] 上傳成功後的縮圖預覽區塊 -->
+  <!-- 上傳成功後的縮圖預覽區塊 -->
   <div id="uploadedGallery" class="max-w-md w-full mt-6 bg-white rounded-2xl shadow-lg p-6 fade-in hidden">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-lg font-bold text-gray-800">已上傳照片</h2>
@@ -118,17 +126,52 @@
     </div>
   </div>
 
-  <!-- [新增] 頁尾更新時間 (迭代確認用) -->
+  <!-- 頁尾更新時間 (迭代確認用) -->
   <footer class="mt-8 text-center text-gray-400 text-xs w-full max-w-md font-medium tracking-wide">
     2026.07.02 15:35 更新
   </footer>
 
-  <!-- [新增] 圖片放大預覽浮動視窗 (Modal) -->
+  <!-- 圖片放大預覽浮動視窗 (Modal) -->
   <div id="imageModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-black/80 backdrop-blur-sm p-4 transition-opacity">
     <button id="closeModalBtn" class="absolute top-6 right-6 text-white hover:text-gray-300 focus:outline-none transition-transform hover:scale-110">
       <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
     </button>
     <img id="modalImage" src="" alt="放大預覽" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl">
+  </div>
+
+  <!-- 使用說明浮動視窗 (Modal) -->
+  <div id="helpModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-black/60 backdrop-blur-sm p-4 transition-opacity">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col fade-in">
+      <div class="bg-blue-600 p-4 text-white flex justify-between items-center">
+        <h3 class="font-bold text-lg flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          系統使用說明
+        </h3>
+        <button id="closeHelpIconBtn" class="text-white hover:text-gray-200 focus:outline-none transition-transform hover:scale-110">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="p-6 space-y-4 text-sm text-gray-700 overflow-y-auto max-h-[70vh]">
+        <p class="font-medium text-gray-800 text-base">歡迎使用活動照片上傳系統！</p>
+        <p>為確保您的照片能正確歸檔，請參考以下上傳步驟：</p>
+        <ol class="list-decimal pl-5 space-y-2 text-gray-600">
+          <li><strong>選擇歸檔位置：</strong>請依據您的活動選擇「指定梯次」，或選擇「今日/其他日期」來建立資料夾。</li>
+          <li><strong>選取照片：</strong>點擊虛線框內的「選擇照片」按鈕，您可以一次圈選多張需要上傳的影像檔案。</li>
+          <li><strong>開始上傳：</strong>確認選取數量無誤後，點擊最下方的「開始上傳」，請耐心等待進度條完成。</li>
+          <li><strong>確認縮圖：</strong>上傳成功後，系統會在下方顯示已上傳照片的縮圖，您可以點擊縮圖放大檢視。</li>
+        </ol>
+        <div class="mt-6 bg-red-50 p-4 rounded-lg border border-red-100 text-red-800">
+          <p class="font-bold mb-1 flex items-center gap-1">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+            資安與隱私提醒
+          </p>
+          <p class="leading-relaxed">上傳照片儲存於新店廠設定雲端空間，資訊安全考量，將不在前端提供圖片連結，如有需要照片，請於線下尋求協助或以LINE群組聯繫。</p>
+        </div>
+      </div>
+      <div class="p-4 border-t bg-gray-50 flex justify-end">
+        <button type="button" id="closeHelpBtnBottom" class="px-5 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none transition-colors">我知道了</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -154,14 +197,20 @@
       submitSpinner: document.getElementById('submitSpinner'),
       statusMessage: document.getElementById('statusMessage'),
       
-      // 新增縮圖區塊元素
+      // 縮圖區塊元素
       uploadedGallery: document.getElementById('uploadedGallery'),
       uploadedGrid: document.getElementById('uploadedGrid'),
 
-      // [新增] Modal 元素
+      // Modal 元素 (圖片預覽)
       imageModal: document.getElementById('imageModal'),
       modalImage: document.getElementById('modalImage'),
-      closeModalBtn: document.getElementById('closeModalBtn')
+      closeModalBtn: document.getElementById('closeModalBtn'),
+
+      // Modal 元素 (使用說明)
+      helpModal: document.getElementById('helpModal'),
+      openHelpBtn: document.getElementById('openHelpBtn'),
+      closeHelpIconBtn: document.getElementById('closeHelpIconBtn'),
+      closeHelpBtnBottom: document.getElementById('closeHelpBtnBottom')
     };
 
     let selectedBatch = { folderId: null, name: null };
@@ -200,12 +249,23 @@
 
       elements.form.addEventListener('submit', handleUpload);
 
-      // [新增] 綁定 Modal 關閉事件
-      elements.closeModalBtn.addEventListener('click', closeModal);
+      // 綁定圖片放大 Modal 關閉事件
+      elements.closeModalBtn.addEventListener('click', closeImageModal);
       elements.imageModal.addEventListener('click', (e) => {
-        // 若點擊到黑色背景區塊，也自動關閉視窗 (避免點到圖片本身關閉)
         if (e.target === elements.imageModal) {
-          closeModal();
+          closeImageModal();
+        }
+      });
+
+      // 綁定使用說明 Modal 開關事件
+      elements.openHelpBtn.addEventListener('click', () => {
+        elements.helpModal.classList.remove('hidden');
+      });
+      elements.closeHelpIconBtn.addEventListener('click', closeHelpModal);
+      elements.closeHelpBtnBottom.addEventListener('click', closeHelpModal);
+      elements.helpModal.addEventListener('click', (e) => {
+        if (e.target === elements.helpModal) {
+          closeHelpModal();
         }
       });
     });
@@ -278,7 +338,6 @@
       setLoadingState(true, `準備上傳 (0/${files.length})...`);
       showStatus('', ''); 
       
-      // [新增] 每次新上傳開始時，清空縮圖區，並將其顯示出來
       elements.uploadedGrid.innerHTML = '';
       elements.uploadedGallery.classList.remove('hidden');
 
@@ -311,10 +370,7 @@
 
           if (result.status === 'success') {
             successCount++;
-            
-            // [新增] 照片成功上傳後，立刻產生本地縮圖並加入畫面
             renderThumbnail(file);
-            
           } else {
             throw new Error(result.message || `檔案 ${file.name} 上傳發生未知的錯誤`);
           }
@@ -381,22 +437,23 @@
       }
     }
 
-    // [新增] 關閉 Modal 的輔助函式
-    function closeModal() {
+    // 關閉圖片放大 Modal
+    function closeImageModal() {
       elements.imageModal.classList.add('hidden');
     }
 
-    // [修改] 渲染本地縮圖的功能 (加入點擊放大)
+    // 關閉使用說明 Modal
+    function closeHelpModal() {
+      elements.helpModal.classList.add('hidden');
+    }
+
+    // 渲染本地縮圖
     function renderThumbnail(file) {
-      // 使用瀏覽器原生的 createObjectURL 建立暫時的本地圖片連結 (0 網路延遲)
       const imageUrl = URL.createObjectURL(file);
       
-      // 建立縮圖 DOM 結構
       const imgWrapper = document.createElement('div');
-      // 加入 cursor-pointer 提示可點擊
       imgWrapper.className = 'relative aspect-square w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm fade-in group cursor-pointer';
       
-      // [新增] 點擊放大事件：替換圖片來源並顯示浮動視窗
       imgWrapper.addEventListener('click', () => {
         elements.modalImage.src = imageUrl;
         elements.imageModal.classList.remove('hidden');
@@ -406,7 +463,6 @@
       img.src = imageUrl;
       img.className = 'object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-110';
       
-      // 建立成功打勾的小標籤 (裝飾用)
       const successBadge = document.createElement('div');
       successBadge.className = 'absolute bottom-1 right-1 bg-green-500 text-white rounded-full p-0.5 shadow-md';
       successBadge.innerHTML = `<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
@@ -414,7 +470,6 @@
       imgWrapper.appendChild(img);
       imgWrapper.appendChild(successBadge);
       
-      // 將縮圖加入網格
       elements.uploadedGrid.appendChild(imgWrapper);
     }
   </script>
